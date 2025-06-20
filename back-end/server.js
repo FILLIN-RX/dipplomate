@@ -1,9 +1,11 @@
 import express, { json } from 'express'
 import {getstudents,getstudent,createEtudiant ,getDocumentsEtudiant,isDossierComplet,setDocumentFourniture,getEtudiantsComplets,getEtudiantsIncomplets} from './database.js'
+import  cors from 'cors';
 
 
 
 const app = express()
+app.use(cors());
 app.use(express.json());
 app.get("/etudiant" , async (req,res)=>{
     const Etudaint_datas = await getstudents()
