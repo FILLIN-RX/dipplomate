@@ -7,6 +7,9 @@
     <title>Diplomate</title>
   </head>
   <body>
+   <div id="toast-container"></div>
+
+    
     <h1>gestion des etudiants</h1>
     <div id="etudiants-container"></div>
     <h2>➕ Ajouter un étudiant</h2>
@@ -20,6 +23,30 @@
       <input type="text" name="groupe" placeholder="Groupe" required />
       <button type="submit">Ajouter</button>
     </form>
+    <div id="edit-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <h2>Modifier l'étudiant</h2>
+        <form id="edit-form">
+          <input type="hidden" name="id" id="edit-id" />
+          <label>Nom:</label>
+          <input type="text" name="nom" id="edit-nom" required /><br />
+          <label>Prénom:</label>
+          <input type="text" name="prenom" id="edit-prenom" required /><br />
+          <label>Sexe:</label>
+          <input type="text" name="sexe" id="edit-sexe" /><br />
+          <label>Date naissance:</label>
+          <input type="date" name="date_naissance" id="edit-date" /><br />
+          <label>Lieu naissance:</label>
+          <input type="text" name="lieu_naissance" id="edit-lieu" /><br />
+          <label>Matricule:</label>
+          <input type="text" name="matricule" id="edit-matricule" /><br />
+          <label>Groupe:</label>
+          <input type="text" name="groupe" id="edit-groupe" /><br />
+          <button type="submit">Enregistrer</button>
+          <button type="button" onclick="fermerModal()">Annuler</button>
+        </form>
+      </div>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
