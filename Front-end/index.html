@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
     <title>Diplomate</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>gestion des etudiants</h1>
     <div id="etudiants-container"></div>
+    <h2>➕ Ajouter un étudiant</h2>
+    <form id="ajout-form">
+      <input type="text" name="nom" placeholder="Nom" required />
+      <input type="text" name="prenom" placeholder="Prénom" required />
+      <input type="text" name="sexe" placeholder="Sexe" required />
+      <input type="date" name="date_naissance" required />
+      <input type="text" name="lieu_naissance" placeholder="Lieu" required />
+      <input type="text" name="matricule" placeholder="Matricule" required />
+      <input type="text" name="groupe" placeholder="Groupe" required />
+      <button type="submit">Ajouter</button>
+    </form>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

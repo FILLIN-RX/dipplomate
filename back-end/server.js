@@ -6,12 +6,13 @@ import  cors from 'cors';
 
 const app = express()
 app.use(cors());
-app.use(express.json());
+app.use(express.json())
+
 app.get("/etudiant" , async (req,res)=>{
     const Etudaint_datas = await getstudents()
     res.send(Etudaint_datas)
 })
-// 🟢 Étudiants avec dossiers complets
+//  Étudiants avec dossiers complets
 app.get("/etudiants/complets", async (req, res) => {
   try {
     const data = await getEtudiantsComplets()
@@ -21,7 +22,7 @@ app.get("/etudiants/complets", async (req, res) => {
   }
 })
 
-// 🔴 Étudiants avec dossiers incomplets
+// Étudiants avec dossiers incomplets
 app.get("/etudiants/incomplets", async (req, res) => {
   try {
     const data = await getEtudiantsIncomplets()
@@ -57,11 +58,17 @@ app.post("/etudiant/:id/documents/:docId", async (req, res) => {
   const etudiantId = req.params.id
   const documentId = req.params.docId
   const { fourni } = req.body  // true ou false
-
+     console.log("🟢 Requête reçue :", {
+    etudiantId,
+    documentId,
+    fourni,
+    body: req.body,
+  })
   try {
     const updated = await setDocumentFourniture(etudiantId, documentId, fourni)
     res.send(updated)
   } catch (err) {
+     console.error("❌ Erreur majFourniture :", err)
     res.status(500).send("Erreur lors de la mise à jour du document")
   }
 })

@@ -1,0 +1,22 @@
+body {
+  font-family: Arial;
+  margin: 20px;
+}
+
+h1 {
+  color: #333;
+}
+
+.etudiant {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.complet {
+  color: green;
+}
+
+.incomplet {
+  color: red;
+}
