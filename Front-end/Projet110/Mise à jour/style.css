@@ -1,0 +1,145 @@
+body{
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    padding-left: 300px; 
+    padding-right: 300px;   
+}
+
+.HEADER{
+    display: flex;
+    flex-direction: row;
+    background-color: rgba(128, 128, 128, 0.25);
+    border-radius: 8px;  
+    padding: 1px;
+}
+
+.header1{
+    display: flex;
+    align-items: center;
+    width: 25%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 1.5em;
+    width: 25%;
+}
+
+.Navigation{
+    display: flex;
+    flex-direction: row-reverse;
+    width: fit-content;
+}
+
+.header2{
+    display: flex;
+    align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5em;
+    font-weight: 300;
+    color: black;
+    padding: 30px;
+    margin: 1px;
+    text-decoration: none;
+}
+
+.header2:hover{
+    background-color: #f4f4f4;
+    border-radius: 10px; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+#miseÀjour{
+    color: rgb(194, 153, 247);
+    background-color: #f4f4f4; 
+    border-radius: 10px; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.container{
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  
+    width: 100%;
+}
+
+section{
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.section-container{
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+}
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box; 
+    }
+
+    input[placeholder="Nom"],
+    input[placeholder="Prenom"],
+    input[placeholder="Matricule"],
+    input[placeholder="Lieu de naissance"] {
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: 100;
+        font-size: 1em;
+    }
+
+
+    select {
+        appearance: none; 
+        background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%23333%22%3E%3Cpath%20d%3D%22M7%2010l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 16px; 
+        padding-right: 30px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #3e8e41;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+
+    

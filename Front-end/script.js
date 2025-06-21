@@ -54,19 +54,48 @@ async function chargerEtudiant() {
   const res = await fetch(`${API}/etudiant`);
   const etudiants = await res.json();
   container.innerHTML = "";
+  const div = document.createElement("table");
+  const tr = document.createElement("tr");
+  const th1 = document.createElement("th");
+  th1.innerText = "groupe";
+  const th2 = document.createElement("th");
+  th2.innerText = "nom";
+  const th3 = document.createElement("th");
+  th3.innerText="Prenom"
+  const th4 = document.createElement("th");
+  th4.innerText="SEXE"
+  const th5 = document.createElement("th");
+  th5.innerText = "DATE DE NAISSANCE"
+  const th6 = document.createElement("th");
+  th6.innerText = "LIEU DE NAISSANCE"
+  const th7 = document.createElement("th");
+  th7.innerText= "MATRICULE"
+  const th8 = document.createElement("th");
+  const th9 = document.createElement("th");
+  tr.appendChild(th1);
+  tr.appendChild(th2);
+  tr.appendChild(th3);
+  tr.appendChild(th4);
+  tr.appendChild(th5);
+  tr.appendChild(th6)
+  tr.appendChild(th7)
+  tr.appendChild(th8)
+  div.appendChild(tr);
+  container.appendChild(div);
+
   for (let e of etudiants) {
     //verifie si etudiant est complet
-
+    const tr = document.createElement("tr");
     const res2 = await fetch(`${API}/etudiant/${e.id}/complet`);
     const status = await res2.json();
-    const div = document.createElement("div");
+
     div.className = "etudiant";
 
-    div.innerHTML = ` <strong>${e.nom} ${e.prenom} - ${
+    tr.innerHTML = `<td>${e.groupe}</td> <td>${e.nom}</td> <td>${e.prenom} </td> <td>${e.sexe}</td><td>${e.date_naissance}</td><td>${e.lieu_naissance}</td><td>${e.matricule}</td> ${
       status.dossierComplet
-        ? "<span class=complet>Dossier complet</span>"
-        : '<span class="incomplet">Dossier Incomplet</span>'
-    }</strong>  <button onclick="voirDocuments(${
+        ? "<td class=complet>Dossier complet</td>"
+        : '<td class="incomplet">Dossier Incomplet</td>'
+    }</th><th>  <button onclick="voirDocuments(${
       e.id
     })">📄 Voir documents</button> <button onclick="handleSuppression(${
       e.id
@@ -75,52 +104,54 @@ async function chargerEtudiant() {
     )})'>✏️ Modifier</button>
 
 
-        <div id="docs-${e.id}"></div>`;
-
-    container.appendChild(div);
+        <div id="docs-${e.id}"></div> </th>`;
+      div.appendChild(tr);
+     container.appendChild(div);
   }
 }
 ///////////////////////////////////////////////////////////////
 //fonction pour voir les document de un etudiant
 ///////////////////////////////////////////////////////////////
-async function voirDocuments(etudiantId){
-    const container = document.getElementById(`docs-${etudiantId}`)
-    container.innerHTML ="chargement....."
+async function voirDocuments(etudiantId) {
+  const container = document.getElementById(`docs-${etudiantId}`);
+  container.innerHTML = "chargement.....";
 
-    const res = await fetch(`${API}/etudiant/${etudiantId}/documents`)
-    const docs = await res.json()
-    container.innerHTML= ""
+  const res = await fetch(`${API}/etudiant/${etudiantId}/documents`);
+  const docs = await res.json();
+  container.innerHTML = "";
 
-    container.innerHTML = docs.map(d=>`
+  container.innerHTML = docs
+    .map(
+      (d) => `
         <div>
             <label>
                 <input 
                     type="checkbox"
                      ${d.fourni ? "checked" : ""}
-                     onchange="majFourniture(${etudiantId},${d.id}, this.checked)"
+                     onchange="majFourniture(${etudiantId},${
+        d.id
+      }, this.checked)"
                 />
             ${d.nom_document} 
             </label>
-        </div>`).join("")
-
+        </div>`
+    )
+    .join("");
 }
 
 ////////////////////////////////////////////////////////////////////////
 //fonction pour metre a jours le status des dossier de l'etudiant
 /////////////////////////////////////////////////////////////////////////
-async function majFourniture(etudiantId,documentId,isChecked) {
-    await fetch(`${API}/etudiant/${etudiantId}/documents/${documentId}`,{
-        method:"POST",
-        headers :{"Content-Type":"application/json"},
-        body: JSON.stringify({fourni: isChecked})
+async function majFourniture(etudiantId, documentId, isChecked) {
+  await fetch(`${API}/etudiant/${etudiantId}/documents/${documentId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fourni: isChecked }),
 
-        //Recharge les etudiant pour mettre ajour leur status
-
-    })
-    chargerEtudiant()
-    
+    //Recharge les etudiant pour mettre ajour leur status
+  });
+  chargerEtudiant();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 //function pour supprimer un etudiant
