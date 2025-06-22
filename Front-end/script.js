@@ -104,7 +104,7 @@ async function chargerEtudiant() {
     )})'>✏️ Modifier</button>
 
 
-        <div id="docs-${e.id}"></div> </th>`;
+        <div id="docs-${e.id}" ></div> </th>`;
       div.appendChild(tr);
      container.appendChild(div);
   }
@@ -114,13 +114,15 @@ async function chargerEtudiant() {
 ///////////////////////////////////////////////////////////////
 async function voirDocuments(etudiantId) {
   const container = document.getElementById(`docs-${etudiantId}`);
+  
   container.innerHTML = "chargement.....";
-
+  container.classList.add("modal")
   const res = await fetch(`${API}/etudiant/${etudiantId}/documents`);
   const docs = await res.json();
   container.innerHTML = "";
-
-  container.innerHTML = docs
+  const containerContent= document.createElement("div")
+  containerContent.classList.add("containerContent")
+  containerContent.innerHTML = docs
     .map(
       (d) => `
         <div>
@@ -138,6 +140,7 @@ async function voirDocuments(etudiantId) {
     )
     .join("");
 }
+container.appendChild(containerContent)
 
 ////////////////////////////////////////////////////////////////////////
 //fonction pour metre a jours le status des dossier de l'etudiant

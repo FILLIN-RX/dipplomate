@@ -22,10 +22,14 @@ h1 {
 }
 .modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 999;
 }
 .modal-content {
@@ -43,92 +47,124 @@ h1 {
   flex-direction: column;
   gap: 10px;
 }
-
+.containerContent{
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+}
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .toast {
   padding: 12px 20px;
   background: #fff;
   border-left: 5px solid;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   font-weight: bold;
   min-width: 250px;
   max-width: 300px;
   animation: fadeInOut 5s ease-in-out forwards;
 }
 
-.toast.success { border-color: green; color: green; }
-.toast.error   { border-color: red; color: red; }
+.toast.success {
+  border-color: green;
+  color: green;
+}
+.toast.error {
+  border-color: red;
+  color: red;
+}
 
 @keyframes fadeInOut {
-  0%   { opacity: 0; transform: translateX(100%); }
-  10%  { opacity: 1; transform: translateX(0); }
-  90%  { opacity: 1; }
-  100% { opacity: 0; transform: translateX(100%); }
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
-.HEADER{
-    display: flex;
-    flex-direction: row;
-    background-color: rgba(128, 128, 128, 0.25);
-    border-radius: 8px;  /*ici*/
-    padding: 1px;
-
-}
-
-.header1{
-    display: flex;
-    align-items: center;
-    width: 30%;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 700;
-    font-size: 1.5em;
-}
-
-.Navigation{
-    display: flex;
-    flex-direction: row-reverse;
-    width: 70%;
+.HEADER {
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(128, 128, 128, 0.25);
+  border-radius: 8px; /*ici*/
+  padding: 1px;
 }
 
-.header2{
-    display: flex;
-    align-items: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 1.5em;
-    font-weight: 300;
-    color: black;
-    padding: 30px;
-    margin: 1px;
-    text-decoration: none;
+.header1 {
+  display: flex;
+  align-items: center;
+  width: 30%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 1.5em;
 }
 
-.header2:hover{
-    background-color: #f4f4f4; /*ici*/
-    border-radius: 10px; 
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+.Navigation {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 70%;
 }
 
-#Acceuil{
-    color: rgb(194, 153, 247);
-    background-color: #f4f4f4; 
-    border-radius: 10px; 
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /*ici*/
+.header2 {
+  display: flex;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5em;
+  font-weight: 300;
+  color: black;
+  padding: 30px;
+  margin: 1px;
+  text-decoration: none;
 }
 
-td{
+.header2:hover {
+  background-color: #f4f4f4; /*ici*/
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+#Acceuil {
+  color: rgb(194, 153, 247);
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /*ici*/
+}
+
+td {
   border: 1px solid black;
   padding: 15px;
 }
-table{
+table {
   border-collapse: collapse;
 }
-th{
-    font-size: 1.2em;
-    font-weight: 200;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    border: 1px solid black;
-    padding: 15px;
+th {
+  font-size: 1.2em;
+  font-weight: 200;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  border: 1px solid black;
+  padding: 15px;
 }
-button{
+button {
   padding: 5px;
   background-color: aqua;
   border-radius: 5px;
