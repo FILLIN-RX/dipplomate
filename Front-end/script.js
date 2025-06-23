@@ -238,28 +238,28 @@ async function voirDocuments(etudiantId) {
 }
 
 function afficherDocuments(container, docs, etudiantId) {
+  if (!docs || docs.length === 0) {
+    container.innerHTML = "Aucun document requis";
+    return;
+  }
+
   const containerContent = document.createElement("div");
   containerContent.classList.add("containerContent");
-
-  containerContent.innerHTML = docs
-    .map(
-      (doc) => `
+  
+  containerContent.innerHTML =`${ docs.map(doc => `
     <div class="document-item">
       <label>
         <input 
           type="checkbox"
           ${doc.fourni ? "checked" : ""}
-          onchange="event.stopPropagation(); majFourniture(${etudiantId}, ${
-        doc.id
-      }, this.checked,event)"
+          onchange="majFourniture(${etudiantId}, ${doc.id}, this.checked)"
         />
         ${doc.nom_document}
       </label>
+     
     </div>
-  `
-    )
-    .join("");
-
+  `).join("")}
+     <button onclick="fermerCreateModal()">fermer</button>`
   container.innerHTML = "";
   container.appendChild(containerContent);
 }
@@ -354,32 +354,15 @@ function fermerModal() {
 // Fonction pour mettre à jour les documents fournis
 ///////////////////////////////////////////////////////
 async function majFourniture(etudiantId, documentId, isChecked) {
-  try {
-    const checkbox = event.target;
-    checkbox.disabled = true;
-    const response = await fetch(
-      `${API}/etudiant/${etudiantId}/documents/${documentId}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fourni: isChecked }),
-      }
-    );
-    if (!response) {
-      throw new Error("Erreur serveur");
-    }
-    checkbox.checked = isChecked;
-    afficherMessage("✓ Document mis à jour");
-    chargerEtudiants();
-  } catch (error) {
-    console.error("Erreur MAJ document:", error);
-    checkbox.checked = !isChecked;
-    afficherMessage("❌ Erreur mise à jour document", "error");
-  } finally {
-    checkbox.disabled = false;
-  }
-}
+  await fetch(`${API}/etudiant/${etudiantId}/documents/${documentId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fourni: isChecked }),
 
+    //Recharge les etudiant pour mettre ajour leur status
+  });
+  chargerEtudiants();
+}
 ///////////////////////////////////////////////////////
 // Fonction pour créer un nouvel étudiant
 ///////////////////////////////////////////////////////
@@ -395,5 +378,21 @@ async function creerEtudiant(data) {
     console.error("Erreur création:", error);
     return false;
   }
+}
+///////////////////////////////////////////////////////////
+//fonction pour afficher les messages
+////////////////////////////////////////////////////////////
+function afficherMessage(texte, type = "success") {
+  const container = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerText = texte;
+
+  container.appendChild(toast);
+
+  // Supprimer le toast après 3 secondes
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
 }
 // ... (autres fonctions comme ouvrirModal, fermerModal, etc. conservent leur style original)
