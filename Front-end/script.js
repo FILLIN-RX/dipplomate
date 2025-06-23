@@ -1,173 +1,296 @@
+///////////////////////////////////////////////////////
+// Constantes et initialisation
+///////////////////////////////////////////////////////
 const API = "http://localhost:5000";
 
-document.addEventListener("DOMContentLoaded", () => {
-  chargerEtudiant();
+// Éléments DOM globaux
+const DOM = {
+  etudiantsContainer: document.getElementById("etudiants-container"),
+  ajoutForm: document.getElementById("ajout-form"),
+  editForm: document.getElementById("edit-form"),
+  editModal: document.getElementById("edit-modal"),
+  createModal: document.getElementById("create-form"),
+  toastContainer: document.getElementById("toast-container"),
+  EtudiantComplet: document.getElementById("etudiant-complet"),
+};
 
-  const editForm = document.getElementById("edit-form");
-  editForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.target).entries());
+///////////////////////////////////////////////////////
+// Chargement initial
+///////////////////////////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+  initEventListeners();
+  chargerEtudiants();
+});
+
+///////////////////////////////////////////////////////
+// Fonction pour initialiser les écouteurs d'événements
+///////////////////////////////////////////////////////
+function initEventListeners() {
+  DOM.editForm.addEventListener("submit", handleEditSubmit);
+  DOM.ajoutForm.addEventListener("submit", handleAjoutSubmit);
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour gérer les soumissions de formulaire
+///////////////////////////////////////////////////////
+async function handleEditSubmit(e) {
+  e.preventDefault();
+
+  try {
+    const data = getFormData(DOM.editForm);
     const success = await modifierEtudiant(data);
+
     if (success) {
       fermerModal();
-      chargerEtudiant();
+      chargerEtudiants();
       afficherMessage("✏️ Étudiant modifié avec succès");
     } else {
-      afficherMessage("❌ Erreur lors de la modification", "error");
+      throw new Error("Erreur lors de la modification");
     }
-  });
-
-  const form = document.getElementById("ajout-form");
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(form).entries());
-    const success = await CreerEtudiant(data);
-
-    if (success) {
-      form.reset();
-      chargerEtudiant();
-      afficherMessage("✅ Étudiant ajouté avec succès");
-    } else {
-      afficherMessage("❌ Erreur lors de l'ajout", "error");
-    }
-
-    form.reset();
-  });
-});
-///////////////////////////////////////////////////////
-//fonction pour creer les etudiant
-//////////////////////////////////////////////////////
-async function CreerEtudiant(data) {
-  const res = await fetch(`${API}/etudiant`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.ok;
-}
-///////////////////////////////////////////////////////////////
-//fonction pour charger les etudiant
-////////////////////////////////////////////////////////////////
-async function chargerEtudiant() {
-  const container = document.getElementById("etudiants-container");
-  container.innerHTML = "chargement...";
-  const res = await fetch(`${API}/etudiant`);
-  const etudiants = await res.json();
-  container.innerHTML = "";
-  const div = document.createElement("table");
-  const tr = document.createElement("tr");
-  const th1 = document.createElement("th");
-  th1.innerText = "groupe";
-  const th2 = document.createElement("th");
-  th2.innerText = "nom";
-  const th3 = document.createElement("th");
-  th3.innerText="Prenom"
-  const th4 = document.createElement("th");
-  th4.innerText="SEXE"
-  const th5 = document.createElement("th");
-  th5.innerText = "DATE DE NAISSANCE"
-  const th6 = document.createElement("th");
-  th6.innerText = "LIEU DE NAISSANCE"
-  const th7 = document.createElement("th");
-  th7.innerText= "MATRICULE"
-  const th8 = document.createElement("th");
-  const th9 = document.createElement("th");
-  tr.appendChild(th1);
-  tr.appendChild(th2);
-  tr.appendChild(th3);
-  tr.appendChild(th4);
-  tr.appendChild(th5);
-  tr.appendChild(th6)
-  tr.appendChild(th7)
-  tr.appendChild(th8)
-  div.appendChild(tr);
-  container.appendChild(div);
-
-  for (let e of etudiants) {
-    //verifie si etudiant est complet
-    const tr = document.createElement("tr");
-    const res2 = await fetch(`${API}/etudiant/${e.id}/complet`);
-    const status = await res2.json();
-
-    div.className = "etudiant";
-
-    tr.innerHTML = `<td>${e.groupe}</td> <td>${e.nom}</td> <td>${e.prenom} </td> <td>${e.sexe}</td><td>${e.date_naissance}</td><td>${e.lieu_naissance}</td><td>${e.matricule}</td> ${
-      status.dossierComplet
-        ? "<td class=complet>Dossier complet</td>"
-        : '<td class="incomplet">Dossier Incomplet</td>'
-    }</th><th>  <button onclick="voirDocuments(${
-      e.id
-    })">📄 Voir documents</button> <button onclick="handleSuppression(${
-      e.id
-    })">🗑️ Supprimer</button> <button onclick='ouvrirModal(${JSON.stringify(
-      e
-    )})'>✏️ Modifier</button>
-
-
-        <div id="docs-${e.id}" ></div> </th>`;
-      div.appendChild(tr);
-     container.appendChild(div);
+  } catch (error) {
+    console.error("Erreur modification étudiant:", error);
+    afficherMessage("❌ Erreur lors de la modification", "error");
   }
 }
-///////////////////////////////////////////////////////////////
-//fonction pour voir les document de un etudiant
-///////////////////////////////////////////////////////////////
+
+async function handleAjoutSubmit(e) {
+  e.preventDefault();
+
+  try {
+    const data = getFormData(DOM.ajoutForm);
+    const success = await creerEtudiant(data);
+
+    if (success) {
+      DOM.ajoutForm.reset();
+      chargerEtudiants();
+      afficherMessage("✅ Étudiant ajouté avec succès");
+    } else {
+      throw new Error("Erreur lors de l'ajout");
+    }
+  } catch (error) {
+    console.error("Erreur ajout étudiant:", error);
+    afficherMessage("❌ Erreur lors de l'ajout", "error");
+  }
+}
+
+///////////////////////////////////////////////////////
+// Fonction utilitaire pour récupérer les données de formulaire
+///////////////////////////////////////////////////////
+function getFormData(form) {
+  return Object.fromEntries(new FormData(form).entries());
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour charger et afficher les étudiants
+///////////////////////////////////////////////////////
+async function chargerEtudiants() {
+  try {
+    DOM.etudiantsContainer.innerHTML = "Chargement en cours...";
+
+    const response = await fetch(`${API}/etudiant`);
+    if (!response.ok) throw new Error("Erreur réseau");
+
+    const etudiants = await response.json();
+    afficherEtudiants(etudiants);
+  } catch (error) {
+    console.error("Erreur chargement étudiants:", error);
+    DOM.etudiantsContainer.innerHTML = "❌ Erreur lors du chargement";
+  }
+}
+/////////////////////////////////////////////////////
+//function pour charger les etudiant complet
+/////////////////////////////////////////////////////
+async function chargerEtudiantsComplet() {
+  try {
+    DOM.etudiantsContainer.innerHTML = "Chargement en cous......";
+    const response = await fetch(`${API}/etudiants/complets`);
+    if (!response) throw new Error("Erreur reseau");
+
+    const etudiants = await response.json();
+    afficherEtudiants(etudiants);
+  } catch (error) {
+    console.error("Erreur chargement étudiants:", error);
+    DOM.etudiantsContainer.innerHTML = "❌ Erreur lors du chargement";
+  }
+}
+////////////////////////////////////////////////////////
+///function pour charger les etudiant incomplet
+////////////////////////////////////////////////////////////
+async function chargerEtudiantsIncomplet() {
+  try {
+    DOM.etudiantsContainer.innerHTML = "chargement en cours..........";
+    const response = await fetch(`${API}/etudiants/incomplets`);
+    if (!response) {
+      throw new Error("Erreur reseau");
+    }
+    const etudiant = await response.json();
+    afficherEtudiants(etudiant);
+  } catch (error) {
+    console.error("Erreur chargement étudiants:", error);
+    DOM.etudiantsContainer.innerHTML = "❌ Erreur lors du chargement";
+  }
+}
+async function afficherEtudiants(etudiants) {
+  if (!etudiants || etudiants.length === 0) {
+    DOM.etudiantsContainer.innerHTML = "Aucun étudiant à afficher";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.appendChild(creerEntetesTableau());
+
+  for (const etudiant of etudiants) {
+    const row = await creerLigneEtudiant(etudiant);
+    table.appendChild(row);
+  }
+
+  DOM.etudiantsContainer.innerHTML = "";
+  DOM.etudiantsContainer.appendChild(table);
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour créer la structure du tableau
+///////////////////////////////////////////////////////
+function creerEntetesTableau() {
+  const entetes = [
+    "Groupe",
+    "Nom",
+    "Prénom",
+    "Sexe",
+    "Date de naissance",
+    "Lieu de naissance",
+    "Matricule",
+    "Statut",
+    "Actions",
+  ];
+
+  const tr = document.createElement("tr");
+  entetes.forEach((texte) => {
+    const th = document.createElement("th");
+    th.textContent = texte;
+    tr.appendChild(th);
+  });
+
+  return tr;
+}
+
+async function creerLigneEtudiant(etudiant) {
+  const tr = document.createElement("tr");
+  const status = await verifierCompletudeDossier(etudiant.id);
+
+  tr.innerHTML = `
+    <td>${etudiant.groupe}</td>
+    <td>${etudiant.nom}</td>
+    <td>${etudiant.prenom}</td>
+    <td>${etudiant.sexe}</td>
+    <td>${formatDate(etudiant.date_naissance)}</td>
+    <td>${etudiant.lieu_naissance}</td>
+    <td>${etudiant.matricule}</td>
+    <td class="${status.dossierComplet ? "complet" : "incomplet"}">
+      ${status.dossierComplet ? "Dossier complet" : "Dossier incomplet"}
+    </td>
+    <td class="actions">
+      <button onclick="voirDocuments(${etudiant.id})">📄 Voir documents</button>
+      <button onclick="handleSuppression(${etudiant.id})">🗑️ Supprimer</button>
+      <button onclick='ouvrirModal(${JSON.stringify(
+        etudiant
+      )})'>✏️ Modifier</button>
+      <div id="docs-${etudiant.id}"></div>
+    </td>
+  `;
+
+  return tr;
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour vérifier l'état des dossiers
+///////////////////////////////////////////////////////
+async function verifierCompletudeDossier(etudiantId) {
+  try {
+    const response = await fetch(`${API}/etudiant/${etudiantId}/complet`);
+    if (!response.ok) throw new Error("Erreur vérification dossier");
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur vérification dossier:", error);
+    return { dossierComplet: false };
+  }
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour gérer les documents
+///////////////////////////////////////////////////////
 async function voirDocuments(etudiantId) {
   const container = document.getElementById(`docs-${etudiantId}`);
-  
-  container.innerHTML = "chargement.....";
-  container.classList.add("modal")
-  const res = await fetch(`${API}/etudiant/${etudiantId}/documents`);
-  const docs = await res.json();
-  container.innerHTML = "";
-  const containerContent= document.createElement("div")
-  containerContent.classList.add("containerContent")
+
+  try {
+    container.innerHTML = "Chargement des documents...";
+    container.classList.add("modal");
+
+    const response = await fetch(`${API}/etudiant/${etudiantId}/documents`);
+    if (!response.ok) throw new Error("Erreur chargement documents");
+
+    const docs = await response.json();
+    afficherDocuments(container, docs, etudiantId);
+  } catch (error) {
+    console.error("Erreur chargement documents:", error);
+    container.innerHTML = "❌ Erreur lors du chargement";
+  }
+}
+
+function afficherDocuments(container, docs, etudiantId) {
+  const containerContent = document.createElement("div");
+  containerContent.classList.add("containerContent");
+
   containerContent.innerHTML = docs
     .map(
-      (d) => `
-        <div>
-            <label>
-                <input 
-                    type="checkbox"
-                     ${d.fourni ? "checked" : ""}
-                     onchange="majFourniture(${etudiantId},${
-        d.id
-      }, this.checked)"
-                />
-            ${d.nom_document} 
-            </label>
-        </div>`
+      (doc) => `
+    <div class="document-item">
+      <label>
+        <input 
+          type="checkbox"
+          ${doc.fourni ? "checked" : ""}
+          onchange="event.stopPropagation(); majFourniture(${etudiantId}, ${
+        doc.id
+      }, this.checked,event)"
+        />
+        ${doc.nom_document}
+      </label>
+    </div>
+  `
     )
     .join("");
-}
-container.appendChild(containerContent)
 
-////////////////////////////////////////////////////////////////////////
-//fonction pour metre a jours le status des dossier de l'etudiant
-/////////////////////////////////////////////////////////////////////////
-async function majFourniture(etudiantId, documentId, isChecked) {
-  await fetch(`${API}/etudiant/${etudiantId}/documents/${documentId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fourni: isChecked }),
-
-    //Recharge les etudiant pour mettre ajour leur status
-  });
-  chargerEtudiant();
+  container.innerHTML = "";
+  container.appendChild(containerContent);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//function pour supprimer un etudiant
-///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+// Fonctions utilitaires diverses
+///////////////////////////////////////////////////////
+function formatDate(dateString) {
+  if (!dateString) return "";
+  return new Date(dateString).toLocaleDateString();
+}
+///////////////////////////////////////////////////////
+// Fonction pour supprimer un étudiant
+///////////////////////////////////////////////////////
 async function supprimerEtudiant(id) {
-  if (!confirm("Supprimer cet étudiant ?")) return;
+  if (!confirm("Supprimer cet étudiant ?")) return false;
 
-  const res = await fetch(`${API}/etudiant/${id}`, {
-    method: "DELETE",
-  });
-  return res.ok;
+  try {
+    const res = await fetch(`${API}/etudiant/${id}`, {
+      method: "DELETE",
+    });
+    return res.ok;
+  } catch (error) {
+    console.error("Erreur suppression:", error);
+    return false;
+  }
 }
 
+///////////////////////////////////////////////////////
+// Handler pour la suppression
+///////////////////////////////////////////////////////
 async function handleSuppression(id) {
   if (!confirm("❓ Supprimer cet étudiant ?")) return;
 
@@ -175,14 +298,35 @@ async function handleSuppression(id) {
 
   if (success) {
     afficherMessage("🗑️ Étudiant supprimé avec succès");
-    chargerEtudiant();
+    chargerEtudiants();
   } else {
     afficherMessage("❌ Échec de la suppression", "error");
   }
 }
-////////////////////////////////////////////////////////
-//fonction pour ouvrir le modale de modification
-//////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////
+// Fonction pour modifier un étudiant
+///////////////////////////////////////////////////////
+async function modifierEtudiant(data) {
+  const id = data.id;
+  delete data.id;
+
+  try {
+    const res = await fetch(`${API}/etudiant/${id}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.ok;
+  } catch (error) {
+    console.error("Erreur modification:", error);
+    return false;
+  }
+}
+
+///////////////////////////////////////////////////////
+// Fonctions pour gérer la modal de modification
+///////////////////////////////////////////////////////
 function ouvrirModal(etudiant) {
   document.getElementById("edit-id").value = etudiant.id;
   document.getElementById("edit-nom").value = etudiant.nom;
@@ -194,41 +338,62 @@ function ouvrirModal(etudiant) {
   document.getElementById("edit-matricule").value = etudiant.matricule;
   document.getElementById("edit-groupe").value = etudiant.groupe;
 
-  document.getElementById("edit-modal").style.display = "flex";
+  DOM.editModal.style.display = "flex";
 }
-///////////////////////////////////////////////////////////
-//fonction pour fermer le modal
-//////////////////////////////////////////////////////////
+function createModal() {
+  DOM.createModal.style.display = "flex";
+}
+function fermerCreateModal() {
+  DOM.createModal.style.display = "none";
+}
 function fermerModal() {
-  document.getElementById("edit-modal").style.display = "none";
+  DOM.editModal.style.display = "none";
 }
-/////////////////////////////////////////////////////////
-//fonction pour modifier un etudiant
-////////////////////////////////////////////////////////
-async function modifierEtudiant(data) {
-  const id = data.id;
-  delete data.id;
 
-  const res = await fetch(`${API}/etudiant/${id}`, {
-    method: "put",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.ok;
+///////////////////////////////////////////////////////
+// Fonction pour mettre à jour les documents fournis
+///////////////////////////////////////////////////////
+async function majFourniture(etudiantId, documentId, isChecked) {
+  try {
+    const checkbox = event.target;
+    checkbox.disabled = true;
+    const response = await fetch(
+      `${API}/etudiant/${etudiantId}/documents/${documentId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fourni: isChecked }),
+      }
+    );
+    if (!response) {
+      throw new Error("Erreur serveur");
+    }
+    checkbox.checked = isChecked;
+    afficherMessage("✓ Document mis à jour");
+    chargerEtudiants();
+  } catch (error) {
+    console.error("Erreur MAJ document:", error);
+    checkbox.checked = !isChecked;
+    afficherMessage("❌ Erreur mise à jour document", "error");
+  } finally {
+    checkbox.disabled = false;
+  }
 }
-///////////////////////////////////////////////////////////
-//fonction pour afficher les messages
-////////////////////////////////////////////////////////////
-function afficherMessage(texte, type = "success") {
-  const container = document.getElementById("toast-container");
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.innerText = texte;
 
-  container.appendChild(toast);
-
-  // Supprimer le toast après 3 secondes
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
+///////////////////////////////////////////////////////
+// Fonction pour créer un nouvel étudiant
+///////////////////////////////////////////////////////
+async function creerEtudiant(data) {
+  try {
+    const res = await fetch(`${API}/etudiant`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return res.ok;
+  } catch (error) {
+    console.error("Erreur création:", error);
+    return false;
+  }
 }
+// ... (autres fonctions comme ouvrirModal, fermerModal, etc. conservent leur style original)
