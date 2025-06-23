@@ -138,6 +138,7 @@ input, select, textarea {
 
 /* Modales */
 .modal {
+  display: block;
   position: fixed;
   top: 0;
   left: 0;

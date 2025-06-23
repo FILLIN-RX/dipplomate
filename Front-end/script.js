@@ -259,7 +259,7 @@ function afficherDocuments(container, docs, etudiantId) {
      
     </div>
   `).join("")}
-     <button onclick="fermerCreateModal()">fermer</button>`
+     <button onclick="fermerDoc(${etudiantId})">fermer</button>`
   container.innerHTML = "";
   container.appendChild(containerContent);
 }
@@ -349,6 +349,11 @@ function fermerCreateModal() {
 function fermerModal() {
   DOM.editModal.style.display = "none";
 }
+function fermerDoc(etudiantId) {
+  const container = document.getElementById(`docs-${etudiantId}`);
+  container.classList.remove("modal"); // retire l'effet modal (display: flex)
+  container.innerHTML = ""; // vide le contenu
+}
 
 ///////////////////////////////////////////////////////
 // Fonction pour mettre à jour les documents fournis
@@ -396,3 +401,14 @@ function afficherMessage(texte, type = "success") {
   }, 3000);
 }
 // ... (autres fonctions comme ouvrirModal, fermerModal, etc. conservent leur style original)
+document.addEventListener("click", function (e) {
+  const modals = document.querySelectorAll(".modal");
+
+  modals.forEach(modal => {
+    const content = modal.querySelector(".containerContent");
+    if (content && !content.contains(e.target)) {
+      modal.classList.remove("modal");
+      modal.innerHTML = ""; // vider le contenu aussi
+    }
+  });
+});
